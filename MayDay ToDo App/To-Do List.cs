@@ -16,11 +16,10 @@ namespace MayDay_ToDo_App
     {
         MySqlConnection conn = new MySqlConnection("Server = localhost; User Id = root; Password = ''; Database = ufukdb");
         MySqlDataAdapter adapter = new MySqlDataAdapter();
-        MySqlCommand command = new MySqlCommand();
         public DataSet ds = new DataSet();
         List<Gebeurtenis> GebeurtenissenLijst = new List<Gebeurtenis>();
         string PCN = "";
-        string currentid = "1";
+        string currentid = "0";
         Gebeurtenis geselecteerdeGebeurtenis;
         Student Gebruiker;
 
@@ -61,9 +60,9 @@ namespace MayDay_ToDo_App
             reader.Close();
             conn.Close();
            
-            foreach (Gebeurtenis gebeurtenis in GebeurtenissenLijst)
+            foreach (Gebeurtenis gebeurtenisindelijst in GebeurtenissenLijst)
             {
-                lbGebeurtenissen.Items.Add(gebeurtenis.gebeurtenis);
+                lbGebeurtenissen.Items.Add(gebeurtenisindelijst.gebeurtenis);
             }
         }
         private void btnAdd_Click(object sender, EventArgs e)
@@ -103,8 +102,7 @@ namespace MayDay_ToDo_App
             adapter = new MySqlDataAdapter("UPDATE `taken` SET `gebeurtenis` = '" + textBox1.Text + "', `datum`= '" + dateTimePicker1.Value + "',`einddatum`= '" + dtEindDatum.Value + "', `locatie`= '" + textBox2.Text + "', `status`='"+status+"' WHERE `id` = '" + currentid + "'", conn);
             adapter.Fill(ds, "taken(gebeurtenis, datum, locatie)");
             lblgDatum.Text = $"Datum: {dateTimePicker1.Value.ToString()}";
-            lblGEindDatum.Text = $"EindDatum: { dtEindDatum.Value.ToString()}";
-           
+            
             textBox1.Clear();
             TestGetData();
         }
@@ -133,9 +131,11 @@ namespace MayDay_ToDo_App
         private void GetSelectedGebeurtenisInfo()
         {
             
-            if (lbGebeurtenissen.SelectedIndex != -1)
+            if (lbGebeurtenissen.SelectedIndex != -1) // als de index niet -1 is, dus als er IETS is geselecteerd
             {
                 geselecteerdeGebeurtenis = GebeurtenissenLijst.Find(x => (x.gebeurtenis == lbGebeurtenissen.SelectedItem.ToString()));
+                //lambda expressie voor, we vinden de gebeurtenis in de gebeurtenissenlijst die de zelfde naam heeft als de gebeurtenis die we hebben
+                //geselecteerd in de lisbox :) -Siy
                 currentid = geselecteerdeGebeurtenis.id;
                 textBox1.Text = geselecteerdeGebeurtenis.gebeurtenis;
 
